@@ -50,7 +50,7 @@ button {
   transition: background 0.15s, border-color 0.15s;
 }
 
-button:hover {
+button:hover:not([aria-pressed="true"]) {
   background: #eef1f5;
 }
 
