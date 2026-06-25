@@ -1,4 +1,5 @@
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
+import './App.css'
 import { AuthProvider, useAuth } from './AuthContext'
 import Auth from './pages/Auth'
 import BackOffice from './pages/BackOffice'
@@ -16,6 +17,7 @@ function Nav() {
   const { isAuthenticated, role, logout } = useAuth()
   return (
     <nav>
+      <strong>M-Motors</strong>
       <Link to="/">Catalogue</Link>
       {isAuthenticated ? (
         <>
