@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { api } from '../api'
+import { api, setAuthToken } from '../api'
 import { useAuth } from '../AuthContext'
+import { clearPendingIntent, getPendingIntent } from '../dossierIntent'
 
 export default function Auth() {
   const [mode, setMode] = useState('login')
@@ -20,7 +21,23 @@ export default function Auth() {
       }
       const form = new URLSearchParams({ username: email, password })
       const response = await api.post('/auth/login', form)
-      login(response.data.access_token)
+      const token = response.data.access_token
+      // Set the header synchronously: login() updates React state, but the
+      // AuthProvider effect that wires axios only runs on the next render —
+      // too late for the dossier creation call right below.
+      setAuthToken(token)
+      login(token)
+
+      const pending = getPendingIntent()
+      if (pending) {
+        clearPendingIntent()
+        try {
+          await api.post('/dossiers', { vehicle_id: pending.vehicleId, type: pending.type })
+        } catch {
+          // The vehicle may have become unavailable between the catalogue view and
+          // login; the client still lands in their space and can browse again.
+        }
+      }
       navigate('/espace-client')
     } catch (err) {
       setError(err.response?.data?.detail || "Une erreur est survenue.")

@@ -5,6 +5,7 @@ import Auth from './pages/Auth'
 import BackOffice from './pages/BackOffice'
 import Catalogue from './pages/Catalogue'
 import EspaceClient from './pages/EspaceClient'
+import VehicleDetail from './pages/VehicleDetail'
 
 function PrivateRoute({ children, adminOnly = false }) {
   const { isAuthenticated, role } = useAuth()
@@ -39,6 +40,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Catalogue />} />
+          <Route path="/vehicules/:id" element={<VehicleDetail />} />
           <Route path="/auth" element={<Auth />} />
           <Route
             path="/espace-client"

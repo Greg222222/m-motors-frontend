@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { setAuthToken } from './api'
 
 const AuthContext = createContext(null)
@@ -16,9 +16,11 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [role, setRole] = useState(() => (token ? decodeRole(token) : null))
 
-  useEffect(() => {
-    setAuthToken(token)
-  }, [token])
+  // Set synchronously during render, not in an effect: child pages call the
+  // API from their own effects, and effects run child-first, so a parent
+  // effect here would attach the auth header *after* those requests already
+  // went out unauthenticated on every fresh page load.
+  setAuthToken(token)
 
   function login(newToken) {
     localStorage.setItem('token', newToken)
